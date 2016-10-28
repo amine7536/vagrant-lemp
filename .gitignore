@@ -1,0 +1,15 @@
+# OS-specific
+.DS_Store
+
+# Editor swapfiles
+.*.sw?
+*~
+
+# Vagrant Stuff
+/*.log
+/.vagrant
+
+# IDE junk
+.idea/*
+*.iml
+.project
