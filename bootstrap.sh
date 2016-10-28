@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND="noninteractive"
 
 sudo apt-get update -y
 sudo apt-get upgrade -y
@@ -45,18 +45,36 @@ sudo sed -i "s/post_max_size = .*/post_max_size = 100M/" /etc/php/7.0/fpm/php.in
 sudo sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/fpm/php.ini
 
 
-# Add user "vagrant" to group www-data
-sudo usermod -a -G www-data vagrant
+# Add user "ubuntu" to group www-data
+sudo usermod -a -G www-data ubuntu
 
 # Install MySQL non-interactively
+MYSQL_PASS="Passw0rd"
 sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/data-dir select ''"
-sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password Passw0rd"
-sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password Passw0rd"
-sudo sudo apt-get install -y mysql-server
+sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password $MYSQL_PASS"
+sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password $MYSQL_PASS"
+sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y mysql-server
 
 # Set Timezone (Server/MySQL)
 sudo ln -sf /usr/share/zoneinfo/UTC /etc/localtime
-sudo mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql --user=root --password=Passw0rd mysql
+sudo mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql --user=root --password=$MYSQL_PASS mysql
+
+
+# Install PhpMyAdmin
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/dbconfig-install boolean true"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/app-password-confirm password $MYSQL_PASS"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/mysql/admin-pass password $MYSQL_PASS"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_PASS"
+sudo debconf-set-selections <<< "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none"
+sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install phpmyadmin
+
+# Add new DB and User
+DBNAME="mydb"
+DBUSER="myuser"
+DBPASS="mypass"
+mysql -uroot -p$MYSQL_PASS -e "CREATE DATABASE $DBNAME"
+mysql -uroot -p$MYSQL_PASS -e "grant all privileges on $DBNAME.* to '$DBUSER'@'localhost' identified by '$DBPASS'"
+
 
 # Install cache software
 sudo apt-get install -y redis-server memcached beanstalkd
