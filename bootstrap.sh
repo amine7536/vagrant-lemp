@@ -10,7 +10,11 @@ sudo apt-get install -y software-properties-common
 
 # Install Basics: Utilities and some Python dev tools
 sudo apt-get install -y build-essential git vim tmux curl wget unzip pigz \
-    python-pip python-dev supervisor htop
+    python-pip python-dev supervisor htop zsh
+
+# Install Oh-My-Zsh
+sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
 
 # Install Nginx & PHP
 sudo apt-get install -y nginx \
@@ -87,6 +91,9 @@ sudo swapon /swapfile
 echo "/swapfile   none    swap    sw    0   0" | sudo tee -a /etc/fstab
 printf "vm.swappiness=10\nvm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
+# Allow caching of NFS file share
+sudo apt-get install -y cachefilesd
+echo "RUN=yes" | sudo tee /etc/default/cachefilesd
 
 # Reload services
 sudo service nginx restart
