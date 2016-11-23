@@ -99,6 +99,11 @@ sudo apt-get install -y cachefilesd
 echo "RUN=yes" | sudo tee /etc/default/cachefilesd
 
 # Reload services
-sudo service nginx restart
 sudo service php7.0-fpm restart
 sudo service mysql restart
+sudo service nginx restart
+
+# Install Symfony
+sudo curl -LsS https://symfony.com/installer -o /usr/local/bin/symfony
+sudo chmod a+x /usr/local/bin/symfony
+
