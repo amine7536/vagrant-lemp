@@ -98,12 +98,16 @@ printf "vm.swappiness=10\nvm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.co
 sudo apt-get install -y cachefilesd
 echo "RUN=yes" | sudo tee /etc/default/cachefilesd
 
+# Fix Locales
+sudo apt-get install language-pack-en
+
 # Reload services
 sudo service php7.0-fpm restart
 sudo service mysql restart
 sudo service nginx restart
 
 # Install Symfony
-sudo curl -LsS https://symfony.com/installer -o /usr/local/bin/symfony
-sudo chmod a+x /usr/local/bin/symfony
+#sudo curl -LsS https://symfony.com/installer -o /usr/local/bin/symfony
+#sudo chmod a+x /usr/local/bin/symfony
+
 
